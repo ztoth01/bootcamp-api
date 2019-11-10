@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# config
+config/config.env
+
+# production
+/build
+
+# misc
+.DS_Store
