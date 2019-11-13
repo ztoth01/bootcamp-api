@@ -3,19 +3,33 @@ const ErrorResponse = require('../utils/errorResopnse');
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };
 
-  error.message = error.message;
+  error.message = err.message;
   // Log to console for DEV
+  console.log(err);
   console.log(err.stack.red);
   console.log(err.name.red.bold);
 
+  // Moongose bad ObjectId
   if (err.name === 'CastError') {
     const message = `Resource not found with id of ${err.value}`;
     error = new ErrorResponse(message, 404);
   }
 
+  // Moongose duplicate key
+  if (err.code === 11000) {
+    const message = 'Duplicate key value entered';
+    error = new ErrorResponse(message, 400);
+  }
+
+  // Moongose ValidatorError
+  if (err.name === 'ValidationError') {
+    const message = Object.values(err.errors).map(val => val.message);
+    error = new ErrorResponse(message, 400);
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
-    error: error.message || 'Server error'
+    error: error.message || 'Server error',
   });
 };
 
