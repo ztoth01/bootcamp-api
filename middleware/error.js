@@ -5,9 +5,7 @@ const errorHandler = (err, req, res, next) => {
 
   error.message = err.message;
   // Log to console for DEV
-  console.log(err);
   console.log(err.stack.red);
-  console.log(err.name.red.bold);
 
   // Moongose bad ObjectId
   if (err.name === 'CastError') {
