@@ -5,6 +5,9 @@ const connectDB = require('./config/db');
 const colors = require('colors');
 const morgan = require('morgan');
 const errorHandler = require('./middleware/error');
+const fileupload = require('express-fileupload');
+const path = require('path');
+const cookieParser = require('cookie-parser');
 
 // Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -14,11 +17,18 @@ connectDB();
 
 // Route files
 const bootcamps = require('./routes/bootcamps');
+const courses = require('./routes/courses');
+const auth = require('./routes/auth');
+const users = require('./routes/users');
+const reviews = require('./routes/reviews');
 
 const app = express();
 
 // Body parser
 app.use(express.json());
+
+// Cookie parser
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -27,8 +37,18 @@ if (process.env.NODE_ENV === 'development') {
 // Middleware
 //app.use(logger);
 
+// Enable upload folder by making it static
+app.use(fileupload());
+// app.use(express.json({ limit: '10mb', extended: true }));
+// Set static folder
+app.use('./uploads', express.static(path.join(__dirname, 'public')));
+
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
+app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
+app.use('/api/v1/reviews', reviews);
 
 // Error middleware
 app.use(errorHandler);
