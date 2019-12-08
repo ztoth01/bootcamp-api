@@ -8,6 +8,7 @@ const errorHandler = require('./middleware/error');
 const fileupload = require('express-fileupload');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const mongoSanitize = require('express-mongo-sanitize');
 
 // Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -30,16 +31,17 @@ app.use(express.json());
 // Cookie parser
 app.use(cookieParser());
 
+// Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Middleware
-//app.use(logger);
-
 // Enable upload folder by making it static
 app.use(fileupload());
-// app.use(express.json({ limit: '10mb', extended: true }));
+
+//  Sanitize data
+app.use(mongoSanitize());
+
 // Set static folder
 app.use('./uploads', express.static(path.join(__dirname, 'public')));
 
